@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Vue 测试</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+</head>
+<body>
+    <div id="app">
+        <h1>测试 {{ status }}</h1>
+        <button @click="test">点击测试</button>
+    </div>
+
+    <script>
+        const { createApp } = Vue;
+        
+        createApp({
+            data() {
+                return {
+                    status: '运行中...'
+                }
+            },
+            methods: {
+                test() {
+                    this.status = '成功！';
+                    console.log('Vue 工作正常！');
+                }
+            }
+        }).mount('#app');
+    </script>
+</body>
+</html>
