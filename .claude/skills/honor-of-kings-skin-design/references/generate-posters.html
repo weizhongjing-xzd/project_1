@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王者荣耀皮肤海报生成器</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        .poster-container {
+            background: #000;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        canvas {
+            display: block;
+            border: 2px solid #333;
+        }
+        h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>王者荣耀《哪吒之魔童降世》联动皮肤海报</h1>
+    
+    <div class="poster-container">
+        <canvas id="nezhaPoster" width="1200" height="1600"></canvas>
+    </div>
+    
+    <div class="poster-container">
+        <canvas id="aoyinPoster" width="1200" height="1600"></canvas>
+    </div>
+
+    <script>
+        // 哪吒海报
+        function drawNezhaPoster() {
+            const canvas = document.getElementById('nezhaPoster');
+            const ctx = canvas.getContext('2d');
+            
+            // 背景渐变 - 红黑配色
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGradient.addColorStop(0, '#1a0000');
+            bgGradient.addColorStop(0.5, '#4d0000');
+            bgGradient.addColorStop(1, '#000000');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 火焰背景效果
+            ctx.save();
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < 20; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = 50 + Math.random() * 100;
+                const flameGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+                flameGradient.addColorStop(0, '#FF4500');
+                flameGradient.addColorStop(0.5, '#8B0000');
+                flameGradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = flameGradient;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+            
+            // 中心区域 - 角色位置（用几何图形代表）
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制角色轮廓（简化版）
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // 身体轮廓
+            ctx.fillStyle = '#8B0000';
+            ctx.beginPath();
+            ctx.ellipse(0, 50, 80, 120, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 头部
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(0, -80, 60, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 发髻（两个）
+            ctx.fillStyle = '#8B0000';
+            ctx.beginPath();
+            ctx.arc(-30, -120, 25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(30, -120, 25, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 火焰效果
+            ctx.strokeStyle = '#FF4500';
+            ctx.lineWidth = 3;
+            for (let i = 0; i < 8; i++) {
+                const angle = (Math.PI * 2 / 8) * i;
+                const startX = Math.cos(angle) * 100;
+                const startY = Math.sin(angle) * 100;
+                ctx.beginPath();
+                ctx.moveTo(startX, startY);
+                ctx.lineTo(startX + Math.cos(angle) * 30, startY + Math.sin(angle) * 30);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+            
+            // 标题区域
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 80px "Microsoft YaHei"';
+            ctx.textAlign = 'center';
+            ctx.fillText('哪吒', centerX, 200);
+            
+            // 副标题
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 50px "Microsoft YaHei"';
+            ctx.fillText('魔童降世', centerX, 280);
+            
+            // 品质标识
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 40px "Microsoft YaHei"';
+            ctx.fillText('无双限定', centerX, 350);
+            
+            // 底部信息
+            ctx.fillStyle = '#CCCCCC';
+            ctx.font = '30px "Microsoft YaHei"';
+            ctx.fillText('电影《哪吒之魔童降世》联动', centerX, canvas.height - 150);
+            
+            // 配色说明
+            ctx.fillStyle = '#888888';
+            ctx.font = '24px "Microsoft YaHei"';
+            ctx.fillText('配色：深红 #8B0000 | 黑色 #000000 | 金色 #FFD700', centerX, canvas.height - 100);
+            
+            // 边框装饰
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+        }
+        
+        // 敖隐海报
+        function drawAoyinPoster() {
+            const canvas = document.getElementById('aoyinPoster');
+            const ctx = canvas.getContext('2d');
+            
+            // 背景渐变 - 青蓝配色
+            const bgGradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            bgGradient.addColorStop(0, '#001a33');
+            bgGradient.addColorStop(0.5, '#003366');
+            bgGradient.addColorStop(1, '#000033');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 水波纹背景效果
+            ctx.save();
+            ctx.globalAlpha = 0.3;
+            for (let i = 0; i < 15; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const size = 60 + Math.random() * 120;
+                const waterGradient = ctx.createRadialGradient(x, y, 0, x, y, size);
+                waterGradient.addColorStop(0, '#4682B4');
+                waterGradient.addColorStop(0.5, '#0000CD');
+                waterGradient.addColorStop(1, 'transparent');
+                ctx.fillStyle = waterGradient;
+                ctx.beginPath();
+                ctx.arc(x, y, size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            ctx.restore();
+            
+            // 中心区域 - 角色位置
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            // 绘制角色轮廓（简化版）
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // 身体轮廓（长袍）
+            ctx.fillStyle = '#4682B4';
+            ctx.beginPath();
+            ctx.ellipse(0, 80, 100, 140, 0, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 头部
+            ctx.fillStyle = '#FFFFFF';
+            ctx.beginPath();
+            ctx.arc(0, -60, 55, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 龙角
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.moveTo(-20, -100);
+            ctx.lineTo(-30, -130);
+            ctx.lineTo(-10, -120);
+            ctx.closePath();
+            ctx.fill();
+            ctx.beginPath();
+            ctx.moveTo(20, -100);
+            ctx.lineTo(30, -130);
+            ctx.lineTo(10, -120);
+            ctx.closePath();
+            ctx.fill();
+            
+            // 王冠
+            ctx.fillStyle = '#FFD700';
+            ctx.fillRect(-40, -110, 80, 15);
+            
+            // 水波纹效果
+            ctx.strokeStyle = '#4682B4';
+            ctx.lineWidth = 2;
+            for (let i = 0; i < 6; i++) {
+                const radius = 120 + i * 20;
+                ctx.beginPath();
+                ctx.arc(0, 0, radius, 0, Math.PI * 2);
+                ctx.stroke();
+            }
+            
+            ctx.restore();
+            
+            // 标题区域
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 80px "Microsoft YaHei"';
+            ctx.textAlign = 'center';
+            ctx.fillText('敖隐', centerX, 200);
+            
+            // 副标题
+            ctx.fillStyle = '#FFFFFF';
+            ctx.font = 'bold 50px "Microsoft YaHei"';
+            ctx.fillText('龙族王子', centerX, 280);
+            
+            // 品质标识
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 40px "Microsoft YaHei"';
+            ctx.fillText('无双限定', centerX, 350);
+            
+            // 底部信息
+            ctx.fillStyle = '#CCCCCC';
+            ctx.font = '30px "Microsoft YaHei"';
+            ctx.fillText('电影《哪吒之魔童降世》联动', centerX, canvas.height - 150);
+            
+            // 配色说明
+            ctx.fillStyle = '#888888';
+            ctx.font = '24px "Microsoft YaHei"';
+            ctx.fillText('配色：青蓝 #4682B4 | 白色 #FFFFFF | 金色 #FFD700', centerX, canvas.height - 100);
+            
+            // 边框装饰
+            ctx.strokeStyle = '#FFD700';
+            ctx.lineWidth = 5;
+            ctx.strokeRect(20, 20, canvas.width - 40, canvas.height - 40);
+        }
+        
+        // 绘制海报
+        drawNezhaPoster();
+        drawAoyinPoster();
+        
+        // 下载功能
+        function downloadPoster(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        // 添加下载按钮
+        window.addEventListener('load', () => {
+            const nezhaContainer = document.querySelectorAll('.poster-container')[0];
+            const aoyinContainer = document.querySelectorAll('.poster-container')[1];
+            
+            const nezhaBtn = document.createElement('button');
+            nezhaBtn.textContent = '下载哪吒海报';
+            nezhaBtn.style.cssText = 'margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer;';
+            nezhaBtn.onclick = () => downloadPoster('nezhaPoster', '哪吒-魔童降世-海报.png');
+            nezhaContainer.appendChild(nezhaBtn);
+            
+            const aoyinBtn = document.createElement('button');
+            aoyinBtn.textContent = '下载敖隐海报';
+            aoyinBtn.style.cssText = 'margin-top: 10px; padding: 10px 20px; font-size: 16px; cursor: pointer;';
+            aoyinBtn.onclick = () => downloadPoster('aoyinPoster', '敖隐-龙族王子-海报.png');
+            aoyinContainer.appendChild(aoyinBtn);
+        });
+    </script>
+</body>
+</html>
+

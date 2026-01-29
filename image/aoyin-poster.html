@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>熬隐 × 熬丙 融合海报</title>
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+    #toolbar {
+      margin: 12px 0;
+    }
+    button {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      background: #3c8dff;
+      color: #fff;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      background: #2c6fd4;
+    }
+    canvas {
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <div id="toolbar">
+    <button id="downloadBtn">下载海报 PNG</button>
+  </div>
+  <!-- 竖版海报：1080 × 1920 -->
+  <canvas id="poster" width="1080" height="1920"></canvas>
+
+  <script>
+    // 与 HTML 位于同一目录下的图片
+    // 只使用熬隐人物原画，整体用冷蓝光、能量带等方式向电影敖丙风格靠拢
+    const HERO_IMG_SRC = "熬隐.png";
+
+    const canvas = document.getElementById("poster");
+    const ctx = canvas.getContext("2d");
+
+    const heroImg = new Image();
+    heroImg.src = HERO_IMG_SRC;
+
+    heroImg.onload = function () {
+      drawPoster();
+    };
+
+    heroImg.onerror = function () {
+      console.warn("英雄图加载失败，请检查路径");
+      window.__posterDone = true;
+    };
+
+    function drawPoster() {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // 背景渐变
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+      bgGrad.addColorStop(0.0, "#050815");
+      bgGrad.addColorStop(0.4, "#08182c");
+      bgGrad.addColorStop(1.0, "#02040a");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      const fogGrad = ctx.createRadialGradient(
+        w * 0.5, h * 0.2, 0,
+        w * 0.5, h * 0.2, h * 0.6
+      );
+      fogGrad.addColorStop(0.0, "rgba(120,200,255,0.25)");
+      fogGrad.addColorStop(1.0, "rgba(0,0,0,0)");
+      ctx.fillStyle = fogGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      drawDragonEyes(w, h);
+
+      // 英雄主体：加强冷蓝色调和背光，借鉴电影敖丙的高对比光影
+      if (heroImg.complete && heroImg.naturalWidth > 0) {
+        const targetHeight = h * 0.8;
+        const scale = targetHeight / heroImg.height;
+        const hw = heroImg.width  * scale;
+        const hh = heroImg.height * scale;
+        const hx = (w - hw) / 2;
+        const hy = h * 0.18;
+
+        ctx.save();
+
+        // 冰蓝背光光晕
+        const haloGrad = ctx.createRadialGradient(
+          w * 0.5, h * 0.32, 0,
+          w * 0.5, h * 0.32, h * 0.42
+        );
+        haloGrad.addColorStop(0.0, "rgba(170,230,255,0.8)");
+        haloGrad.addColorStop(0.5, "rgba(80,160,255,0.35)");
+        haloGrad.addColorStop(1.0, "rgba(0,0,0,0)");
+        ctx.fillStyle = haloGrad;
+        ctx.fillRect(0, 0, w, h);
+
+        // 冷调 + 提亮 + 略微增加饱和度
+        if ("filter" in ctx) {
+          ctx.filter = "hue-rotate(210deg) saturate(1.25) brightness(1.05)";
+        }
+
+        ctx.drawImage(heroImg, hx, hy, hw, hh);
+        ctx.restore();
+      }
+
+      drawEnergyRibbons(w, h);
+      drawTextBlock(w, h);
+
+      // 标记：海报已绘制完成，供自动化截图脚本等待
+      window.__posterDone = true;
+    }
+
+    function drawDragonEyes(w, h) {
+      ctx.save();
+      const eyeRadiusX = w * 0.16;
+      const eyeRadiusY = h * 0.07;
+      const eyeY = h * 0.32;
+
+      function drawEye(cx, flip) {
+        ctx.beginPath();
+        ctx.ellipse(cx, eyeY, eyeRadiusX, eyeRadiusY, 0, 0, Math.PI * 2);
+        const eg = ctx.createRadialGradient(
+          cx, eyeY, 0,
+          cx, eyeY, eyeRadiusX
+        );
+        eg.addColorStop(0.0, "rgba(255,255,255,0.5)");
+        eg.addColorStop(0.4, "rgba(140,200,255,0.4)");
+        eg.addColorStop(1.0, "rgba(0,0,0,0)");
+        ctx.fillStyle = eg;
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(cx + flip * eyeRadiusX * 0.18, eyeY - eyeRadiusY * 0.6);
+        ctx.quadraticCurveTo(
+          cx + flip * eyeRadiusX * 0.3, eyeY,
+          cx + flip * eyeRadiusX * 0.18, eyeY + eyeRadiusY * 0.6
+        );
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "rgba(255,255,255,0.8)";
+        ctx.stroke();
+      }
+
+      drawEye(w * 0.25, -1);
+      drawEye(w * 0.75, 1);
+      ctx.restore();
+    }
+
+    function drawEnergyRibbons(w, h) {
+      ctx.save();
+      ctx.lineWidth = 6;
+      ctx.lineCap = "round";
+
+      const ribbons = [
+        { color: "rgba(120,220,255,0.9)", offsetY: 0.10, amp: 0.07 },
+        { color: "rgba(80,160,255,0.7)",  offsetY: 0.18, amp: 0.06 },
+        { color: "rgba(180,240,255,0.6)", offsetY: 0.26, amp: 0.05 }
+      ];
+
+      ribbons.forEach((rb, idx) => {
+        ctx.beginPath();
+        const baseY = h * (0.55 + rb.offsetY);
+        for (let x = 0; x <= w; x += 12) {
+          const t = x / w * Math.PI * 2;
+          const y = baseY + Math.sin(t * 1.3 + idx) * h * rb.amp;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = rb.color;
+        ctx.stroke();
+      });
+
+      for (let i = 0; i < 90; i++) {
+        const x = Math.random() * w;
+        const y = h * (0.55 + Math.random() * 0.3);
+        const r = 1 + Math.random() * 2.8;
+        const alpha = 0.25 + Math.random() * 0.5;
+        ctx.fillStyle = `rgba(190,240,255,${alpha})`;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawTextBlock(w, h) {
+      ctx.save();
+
+      const marginBottom = 90;
+      const centerX = w * 0.5;
+      const baseY = h - marginBottom;
+
+      const bandHeight = 80;
+      const bg = ctx.createLinearGradient(0, h - bandHeight - 60, 0, h);
+      bg.addColorStop(0.0, "rgba(10,20,40,0.0)");
+      bg.addColorStop(0.6, "rgba(10,30,60,0.8)");
+      bg.addColorStop(1.0, "rgba(5,10,25,1.0)");
+      ctx.fillStyle = bg;
+      ctx.fillRect(0, h - bandHeight - 60, w, bandHeight + 60);
+
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#e6f7ff";
+      ctx.font = "bold 40px Arial";
+      ctx.fillText("熬隐 · 冰龙之心", centerX, baseY - 10);
+
+      ctx.fillStyle = "rgba(200,230,255,0.85)";
+      ctx.font = "18px Arial";
+      ctx.fillText("Between Frost and Flame, the Dragon Soul Awakens", centerX, baseY + 20);
+
+      ctx.textAlign = "left";
+      ctx.font = "14px Arial";
+      ctx.fillStyle = "rgba(180,210,240,0.8)";
+      ctx.fillText("原创融合海报 · 基于熬隐形象 & 冰系龙族意象", 40, h - 40);
+
+      ctx.restore();
+    }
+
+    document.getElementById("downloadBtn").addEventListener("click", function () {
+      const link = document.createElement("a");
+      link.download = "aoyin_poster.png";
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    });
+  </script>
+</body>
+</html>
+
+
